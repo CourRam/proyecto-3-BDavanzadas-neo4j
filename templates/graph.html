@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Grafo Visual{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-row">
+    <div>
+      <h1>Grafo<br>Visual</h1>
+      <p>Nodos y relaciones en Neo4j — arrastra, acerca y haz clic en un nodo</p>
+    </div>
+  </div>
+</div>
+
+<div class="card-dark" style="padding:0; overflow:hidden; position:relative;">
+  <!-- Leyenda -->
+  <div style="position:absolute;top:20px;left:24px;z-index:10;font-size:0.72rem;font-weight:700;
+              letter-spacing:0.08em;text-transform:uppercase;line-height:2.2;color:rgba(255,255,255,0.55);">
+    <div>
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d4940a;
+                   margin-right:8px;vertical-align:middle;"></span>Department
+    </div>
+    <div>
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fff;
+                   opacity:0.7;margin-right:8px;vertical-align:middle;"></span>Employee
+    </div>
+  </div>
+  <svg id="graph-svg" width="100%" height="580"
+       style="background:transparent; display:block;"></svg>
+</div>
+
+<!-- Detalle del nodo seleccionado -->
+<div id="node-detail" class="card-light" style="display:none;">
+  <div class="card-light-title">Propiedades del nodo</div>
+  <pre id="node-props"
+       style="font-size:0.82rem;color:var(--muted);line-height:1.8;white-space:pre-wrap;"></pre>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+(async () => {
+  const data = await fetch("/api/graph-data").then(r => r.json());
+
+  const svg = d3.select("#graph-svg");
+  const W   = document.getElementById("graph-svg").clientWidth || 960;
+  const H   = 580;
+  const g   = svg.append("g");
+
+  // Zoom
+  svg.call(
+    d3.zoom().scaleExtent([0.25, 4])
+      .on("zoom", e => g.attr("transform", e.transform))
+  );
+
+  // Arrowhead marker
+  svg.append("defs").append("marker")
+    .attr("id", "arrow")
+    .attr("viewBox", "0 -4 9 8")
+    .attr("refX", 26).attr("refY", 0)
+    .attr("markerWidth", 7).attr("markerHeight", 7)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M0,-4L9,0L0,4")
+    .attr("fill", "rgba(212,148,10,0.6)");
+
+  const simulation = d3.forceSimulation(data.nodes)
+    .force("link",      d3.forceLink(data.links).id(d => d.id).distance(130))
+    .force("charge",    d3.forceManyBody().strength(-380))
+    .force("center",    d3.forceCenter(W / 2, H / 2))
+    .force("collision", d3.forceCollide(32));
+
+  // Links
+  const link = g.append("g").selectAll("line")
+    .data(data.links).join("line")
+    .attr("stroke", "rgba(212,148,10,0.35)")
+    .attr("stroke-width", 1.5)
+    .attr("marker-end", "url(#arrow)");
+
+  // Link labels
+  const linkLabel = g.append("g").selectAll("text")
+    .data(data.links).join("text")
+    .attr("font-size", "8px")
+    .attr("font-family", "Poppins, sans-serif")
+    .attr("font-weight", "700")
+    .attr("letter-spacing", "0.10em")
+    .attr("fill", "rgba(212,148,10,0.55)")
+    .attr("text-anchor", "middle")
+    .text(d => d.type);
+
+  // Node circles
+  const node = g.append("g").selectAll("circle")
+    .data(data.nodes).join("circle")
+    .attr("r", d => d.label === "Department" ? 24 : 17)
+    .attr("fill", d => d.label === "Department" ? "#d4940a" : "rgba(255,255,255,0.78)")
+    .attr("stroke", d => d.label === "Department" ? "#f0b429" : "rgba(255,255,255,0.3)")
+    .attr("stroke-width", 2)
+    .style("cursor", "pointer")
+    .call(
+      d3.drag()
+        .on("start", (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on("drag",  (e, d) => { d.fx = e.x; d.fy = e.y; })
+        .on("end",   (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
+    )
+    .on("click", (e, d) => {
+      const box = document.getElementById("node-detail");
+      box.style.display = "block";
+      document.getElementById("node-props").textContent = JSON.stringify(d.props, null, 2);
+    });
+
+  // Node labels
+  const label = g.append("g").selectAll("text")
+    .data(data.nodes).join("text")
+    .attr("font-size", d => d.label === "Department" ? "10px" : "9px")
+    .attr("font-family", "Poppins, sans-serif")
+    .attr("font-weight", "700")
+    .attr("fill", d => d.label === "Department" ? "#3b1a0e" : "#3b1a0e")
+    .attr("text-anchor", "middle")
+    .attr("dy", "0.35em")
+    .text(d => d.name)
+    .style("pointer-events", "none");
+
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+    linkLabel
+      .attr("x", d => (d.source.x + d.target.x) / 2)
+      .attr("y", d => (d.source.y + d.target.y) / 2 - 6);
+    node.attr("cx", d => d.x).attr("cy", d => d.y);
+    label.attr("x", d => d.x).attr("y", d => d.y + 34);
+  });
+})();
+</script>
+
+{% endblock %}
