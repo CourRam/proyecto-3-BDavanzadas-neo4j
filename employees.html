@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Empleados{% endblock %}
+{% block topbar_title %}Empleados{% endblock %}
+{% block topbar_sub %}Nodos :Employee en el grafo{% endblock %}
+
+{% block content %}
+
+<div class="page-actions">
+  <h2>Todos los Empleados</h2>
+  <a href="{{ url_for('create_employee') }}" class="btn btn-primary">+ Nuevo</a>
+</div>
+
+<div class="card">
+  {% if employees %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No. Emp</th>
+          <th>Nombre</th>
+          <th>Puesto</th>
+          <th>Salario</th>
+          <th>Comision</th>
+          <th>Fecha Alta</th>
+          <th>Jefe</th>
+          <th>Departamento</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in employees %}
+        <tr>
+          <td><span class="badge badge-emp">{{ e.empno }}</span></td>
+          <td>{{ e.ename }}</td>
+          <td><span class="badge badge-job">{{ e.job }}</span></td>
+          <td>${{ "%.2f"|format(e.sal) }}</td>
+          <td>{{ "$%.2f"|format(e.comm) if e.comm is not none else "—" }}</td>
+          <td>{{ e.hiredate }}</td>
+          <td>{{ e.mgr if e.mgr else "—" }}</td>
+          <td><span class="badge badge-dept">{{ e.dname or e.deptno }}</span></td>
+          <td>
+            <div class="actions">
+              <a href="{{ url_for('edit_employee', empno=e.empno) }}" class="btn btn-secondary btn-sm">Editar</a>
+              <form method="POST" action="{{ url_for('delete_employee', empno=e.empno) }}"
+                    onsubmit="return confirm('Eliminar empleado {{ e.ename }}?')">
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No hay empleados registrados.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

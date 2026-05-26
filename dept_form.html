@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Departamento{% endblock %}
+{% block topbar_title %}{{ action }} Departamento{% endblock %}
+{% block topbar_sub %}Nodo :Department{% endblock %}
+
+{% block content %}
+
+<div class="page-actions">
+  <h2>{{ action }} Departamento</h2>
+  <a href="{{ url_for('departments') }}" class="btn btn-secondary">Cancelar</a>
+</div>
+
+<div class="card">
+  <form method="POST">
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label for="deptno">Numero de Departamento</label>
+        <input type="number" id="deptno" name="deptno"
+               value="{{ dept.deptno if dept else '' }}"
+               {{ 'readonly' if dept else '' }} required />
+        {% if dept %}<p class="hint">El numero de departamento no puede modificarse.</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="dname">Nombre</label>
+        <input type="text" id="dname" name="dname"
+               value="{{ dept.dname if dept else '' }}"
+               placeholder="Ej. ACCOUNTING" required />
+      </div>
+
+      <div class="form-group full">
+        <label for="loc">Ubicacion</label>
+        <input type="text" id="loc" name="loc"
+               value="{{ dept.loc if dept else '' }}"
+               placeholder="Ej. NEW YORK" required />
+      </div>
+
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{{ action }}</button>
+      <a href="{{ url_for('departments') }}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
