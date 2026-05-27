@@ -9,7 +9,7 @@
       <h1>{{ action }}<br>Departamento</h1>
       <p>Nodo :Department</p>
     </div>
-    <a href="{{ url_for('departments') }}" class="btn btn-outline" style="border-color:rgba(59,26,14,0.25);color:var(--muted);">Cancelar</a>
+    <a href="{{ url_for('departments.index') }}" class="btn btn-outline" style="border-color:rgba(59,26,14,0.25);color:var(--muted);">Cancelar</a>
   </div>
 </div>
 
@@ -44,7 +44,7 @@
     </div>
     <div class="form-actions">
       <button type="submit" class="btn btn-black">{{ action }}</button>
-      <a href="{{ url_for('departments') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,0.20);color:rgba(255,255,255,0.55);">Cancelar</a>
+      <a href="{{ url_for('departments.index') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,0.20);color:rgba(255,255,255,0.55);">Cancelar</a>
     </div>
   </form>
 </div>

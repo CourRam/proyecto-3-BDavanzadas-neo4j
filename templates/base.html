@@ -359,8 +359,8 @@
   <a href="{{ url_for('index') }}" class="navbar-logo">SCOTT DB</a>
   <ul class="navbar-links">
     <li><a href="{{ url_for('index') }}"       class="{{ 'active' if request.endpoint == 'index' }}">Inicio</a></li>
-    <li><a href="{{ url_for('departments') }}"  class="{{ 'active' if 'department' in request.endpoint }}">Departamentos</a></li>
-    <li><a href="{{ url_for('employees') }}"    class="{{ 'active' if 'employee'   in request.endpoint }}">Empleados</a></li>
+    <li><a href="{{ url_for('departments.index') }}"  class="{{ 'active' if 'department' in request.endpoint }}">Departamentos</a></li>
+    <li><a href="{{ url_for('employees.index') }}"    class="{{ 'active' if 'employee'   in request.endpoint }}">Empleados</a></li>
   </ul>
   <div class="navbar-right"><span>Neo4j</span> Graph CRUD</div>
 </nav>

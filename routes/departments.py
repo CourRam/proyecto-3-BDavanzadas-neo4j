@@ -6,7 +6,6 @@ bp = Blueprint("departments", __name__, url_prefix="/departments")
 
 @bp.route("/")
 def index():
-    """Lista todos los departamentos."""
     depts = run_query(
         "MATCH (d:Department) "
         "RETURN d.deptno AS deptno, d.dname AS dname, d.loc AS loc "
@@ -17,7 +16,7 @@ def index():
 
 @bp.route("/create", methods=["GET", "POST"])
 def create():
-    """Crea un nuevo nodo Department."""
+    
     if request.method == "POST":
         data = {
             "deptno": int(request.form["deptno"]),

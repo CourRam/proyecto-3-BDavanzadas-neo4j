@@ -5,7 +5,7 @@
 
 <div class="page-header">
   <h1>Panel<br>Principal</h1>
-  <p>Base de datos de grafos Neo4j — Esquema SCOTT</p>
+  <p>SCOTT</p>
 </div>
 
 <div class="stat-grid">
@@ -17,33 +17,6 @@
     <div class="stat-value">{{ emp_count }}</div>
     <div class="stat-label">Empleados</div>
   </div>
-</div>
-
-<div class="card-dark">
-  <div class="card-dark-title">Accesos Rapidos</div>
-  <div class="quick-grid">
-    <a href="{{ url_for('departments') }}" class="quick-link">
-      <div class="quick-link-label">Ver</div>Departamentos
-    </a>
-    <a href="{{ url_for('employees') }}" class="quick-link">
-      <div class="quick-link-label">Ver</div>Empleados
-    </a>
-    <a href="{{ url_for('create_department') }}" class="quick-link">
-      <div class="quick-link-label">Crear</div>Departamento
-    </a>
-    <a href="{{ url_for('create_employee') }}" class="quick-link">
-      <div class="quick-link-label">Crear</div>Empleado
-    </a>
-    <a href="{{ url_for('graph') }}" class="quick-link">
-      <div class="quick-link-label">Ver</div>Grafo Visual
-    </a>
-  </div>
-</div>
-
-<div class="about-box">
-  Aplicacion Flask con operaciones CRUD sobre Neo4j. Modela el esquema clasico <strong>SCOTT</strong>
-  con nodos <code>:Department</code> y <code>:Employee</code>, conectados mediante relaciones
-  <code>WORKS_IN</code> y <code>REPORTS_TO</code>.
 </div>
 
 {% endblock %}
