@@ -12,12 +12,10 @@ MERGE (e)-[:WORKS_IN]->(d);
 MATCH (e:Employee), (m:Employee) WHERE e.mgr = m.empno
 MERGE (e)-[:REPORTS_TO]->(m);
 
-
-// Restriccion de unicidad para nodos Department
+//res
 CREATE CONSTRAINT dept_unique IF NOT EXISTS
 FOR (d:Department) REQUIRE d.deptno IS UNIQUE;
 
-// Restriccion de unicidad para nodos Employee
 CREATE CONSTRAINT emp_unique IF NOT EXISTS
 FOR (e:Employee) REQUIRE e.empno IS UNIQUE;
 
