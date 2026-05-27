@@ -1,17 +1,10 @@
-// ============================================================
-// seed_data.cypher
-// Datos iniciales del esquema SCOTT: Departamentos y Empleados
-// Las relaciones WORKS_IN conectan empleados con su departamento
-// La relacion MANAGES conecta un empleado con su jefe directo
-// ============================================================
-
-// --- Departamentos ---
+// Departamentos 
 MERGE (d1:Department {deptno: 10}) SET d1.dname = 'ACCOUNTING', d1.loc = 'NEW YORK';
 MERGE (d2:Department {deptno: 20}) SET d2.dname = 'RESEARCH',   d2.loc = 'DALLAS';
 MERGE (d3:Department {deptno: 30}) SET d3.dname = 'SALES',      d3.loc = 'CHICAGO';
 MERGE (d4:Department {deptno: 40}) SET d4.dname = 'OPERATIONS', d4.loc = 'BOSTON';
 
-// --- Empleados ---
+//  Empleados 
 MERGE (e1:Employee {empno: 7839})
 SET e1.ename = 'KING',   e1.job = 'PRESIDENT', e1.mgr = null,
     e1.hiredate = '1981-11-17', e1.sal = 5000, e1.comm = null, e1.deptno = 10;
@@ -68,10 +61,10 @@ MERGE (e14:Employee {empno: 7934})
 SET e14.ename = 'MILLER', e14.job = 'CLERK',   e14.mgr = 7782,
     e14.hiredate = '1982-01-23', e14.sal = 1300, e14.comm = null, e14.deptno = 10;
 
-// --- Relaciones WORKS_IN: Empleado -> Departamento ---
+// WORKS_IN: Empleado -> Departamento 
 MATCH (e:Employee), (d:Department) WHERE e.deptno = d.deptno
 MERGE (e)-[:WORKS_IN]->(d);
 
-// --- Relaciones MANAGES: Empleado -> Jefe directo ---
+// MANAGES: Empleado -> Jefe directo 
 MATCH (e:Employee), (m:Employee) WHERE e.mgr = m.empno
 MERGE (e)-[:REPORTS_TO]->(m);

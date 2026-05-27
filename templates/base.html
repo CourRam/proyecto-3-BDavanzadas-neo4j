@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    /* ── Variables ─────────────────────────────────────── */
     :root {
       --cream:     #e8e4dc;
       --brown-dk:  #3b1a0e;
@@ -35,7 +34,6 @@
       min-height: 100vh;
     }
 
-    /* ── NAVBAR ────────────────────────────────────────── */
     .navbar {
       display: flex;
       align-items: center;
@@ -79,10 +77,8 @@
     }
     .navbar-right span { color: var(--gold); font-weight: 700; }
 
-    /* ── PAGE WRAPPER ──────────────────────────────────── */
     .page { max-width: 1200px; margin: 0 auto; padding: 50px 60px 80px; }
 
-    /* ── PAGE HEADER ───────────────────────────────────── */
     .page-header {
       margin-bottom: 40px;
     }
@@ -106,7 +102,6 @@
       gap: 16px;
     }
 
-    /* ── STAT CARDS ────────────────────────────────────── */
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -144,7 +139,6 @@
       color: rgba(255,255,255,0.55);
     }
 
-    /* ── DARK CARD ─────────────────────────────────────── */
     .card-dark {
       background: var(--brown-card);
       border-radius: var(--radius-card);
@@ -161,7 +155,6 @@
       margin-bottom: 22px;
     }
 
-    /* ── LIGHT CARD ────────────────────────────────────── */
     .card-light {
       background: rgba(59,26,14,0.05);
       border-radius: var(--radius-card);
@@ -180,7 +173,6 @@
       border-bottom: 1px solid rgba(59,26,14,0.10);
     }
 
-    /* ── TABLE ─────────────────────────────────────────── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
     thead th {
@@ -197,7 +189,6 @@
     tbody tr:hover { background: rgba(255,255,255,0.04); }
     tbody td { padding: 13px 16px; color: rgba(255,255,255,0.88); }
 
-    /* ── BADGES ────────────────────────────────────────── */
     .badge {
       display: inline-block;
       padding: 3px 12px;
@@ -210,7 +201,6 @@
     .badge-gold  { background: rgba(212,148,10,0.20); color: var(--gold-lt); }
     .badge-white { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
 
-    /* ── BUTTONS ───────────────────────────────────────── */
     .btn {
       display: inline-block;
       padding: 12px 28px;
@@ -265,7 +255,6 @@
 
     .actions { display: flex; gap: 8px; align-items: center; }
 
-    /* ── FORMS ─────────────────────────────────────────── */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -282,7 +271,6 @@
       color: rgba(255,255,255,0.50);
     }
 
-    /* Input con solo borde inferior — estilo Spicy */
     input, select, textarea {
       background: transparent;
       border: none;
@@ -312,7 +300,6 @@
       flex-wrap: wrap;
     }
 
-    /* ── QUICK LINKS (index) ───────────────────────────── */
     .quick-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -340,7 +327,6 @@
       margin-bottom: 4px;
     }
 
-    /* ── EMPTY STATE ───────────────────────────────────── */
     .empty {
       text-align: center;
       padding: 56px 24px;
@@ -348,7 +334,7 @@
       font-size: 0.9rem;
     }
 
-    /* ── ABOUT BOX ─────────────────────────────────────── */
+
     .about-box {
       background: rgba(59,26,14,0.06);
       border-left: 4px solid var(--gold);
@@ -369,19 +355,16 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <a href="{{ url_for('index') }}" class="navbar-logo">SCOTT DB</a>
   <ul class="navbar-links">
     <li><a href="{{ url_for('index') }}"       class="{{ 'active' if request.endpoint == 'index' }}">Inicio</a></li>
     <li><a href="{{ url_for('departments') }}"  class="{{ 'active' if 'department' in request.endpoint }}">Departamentos</a></li>
     <li><a href="{{ url_for('employees') }}"    class="{{ 'active' if 'employee'   in request.endpoint }}">Empleados</a></li>
-    <li><a href="{{ url_for('graph') }}"        class="{{ 'active' if request.endpoint == 'graph' }}">Grafo</a></li>
   </ul>
   <div class="navbar-right"><span>Neo4j</span> Graph CRUD</div>
 </nav>
 
-<!-- CONTENT -->
 <div class="page">
   {% block content %}{% endblock %}
 </div>
