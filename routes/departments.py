@@ -33,7 +33,6 @@ def create():
 
 @bp.route("/edit/<int:deptno>", methods=["GET", "POST"])
 def edit(deptno):
-    """Actualiza un nodo Department existente."""
     if request.method == "POST":
         run_write(
             "MATCH (d:Department {deptno: $deptno}) SET d.dname = $dname, d.loc = $loc",
@@ -55,7 +54,6 @@ def edit(deptno):
 
 @bp.route("/delete/<int:deptno>", methods=["POST"])
 def delete(deptno):
-    """Elimina un nodo Department y sus relaciones."""
     run_write(
         "MATCH (d:Department {deptno: $deptno}) DETACH DELETE d",
         {"deptno": deptno}

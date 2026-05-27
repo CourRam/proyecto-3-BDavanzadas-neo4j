@@ -5,14 +5,12 @@ bp = Blueprint("employees", __name__, url_prefix="/employees")
 
 
 def _get_departments() -> list[dict]:
-    """Devuelve todos los departamentos para los formularios."""
     return run_query(
         "MATCH (d:Department) RETURN d.deptno AS deptno, d.dname AS dname ORDER BY d.deptno"
     )
 
 
 def _create_works_in(empno: int, deptno: int) -> None:
-    """Elimina la relación WORKS_IN previa y crea la nueva."""
     run_write(
         """
         MATCH (e:Employee {empno: $empno})-[r:WORKS_IN]->() DELETE r
@@ -25,7 +23,6 @@ def _create_works_in(empno: int, deptno: int) -> None:
 
 
 def _create_reports_to(empno: int, mgr: int | None) -> None:
-    """Elimina la relación REPORTS_TO previa y, si hay jefe, crea la nueva."""
     run_write(
         "MATCH (e:Employee {empno: $empno})-[r:REPORTS_TO]->() DELETE r",
         {"empno": empno}
@@ -40,13 +37,8 @@ def _create_reports_to(empno: int, mgr: int | None) -> None:
         )
 
 
-# ----------------------------------------------------------------
-# Rutas
-# ----------------------------------------------------------------
-
 @bp.route("/")
 def index():
-    """Lista todos los empleados con el nombre de su departamento."""
     emps = run_query(
         """
         MATCH (e:Employee)
@@ -62,7 +54,6 @@ def index():
 
 @bp.route("/create", methods=["GET", "POST"])
 def create():
-    """Crea un nuevo nodo Employee y sus relaciones."""
     depts = _get_departments()
     if request.method == "POST":
         empno  = int(request.form["empno"])
@@ -104,7 +95,6 @@ def create():
 
 @bp.route("/edit/<int:empno>", methods=["GET", "POST"])
 def edit(empno):
-    """Actualiza un nodo Employee y recrea sus relaciones."""
     depts = _get_departments()
     if request.method == "POST":
         deptno = int(request.form["deptno"])
@@ -147,7 +137,6 @@ def edit(empno):
 
 @bp.route("/delete/<int:empno>", methods=["POST"])
 def delete(empno):
-    """Elimina un nodo Employee y todas sus relaciones."""
     run_write(
         "MATCH (e:Employee {empno: $empno}) DETACH DELETE e",
         {"empno": empno}
