@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from neo4j.exceptions import ConstraintError
 from db import run_query, run_write
 
 bp = Blueprint("departments", __name__, url_prefix="/departments")
@@ -23,12 +24,16 @@ def create():
             "dname":  request.form["dname"].upper(),
             "loc":    request.form["loc"].upper(),
         }
-        run_write(
-            "CREATE (d:Department {deptno: $deptno, dname: $dname, loc: $loc})",
-            data
-        )
-        return redirect(url_for("departments.index"))
-    return render_template("dept_form.html", action="Crear", dept=None)
+        try:
+            run_write(
+                "CREATE (d:Department {deptno: $deptno, dname: $dname, loc: $loc})",
+                data
+            )
+            return redirect(url_for("departments.index"))
+        except ConstraintError:
+            error = f"El número de departamento {data['deptno']} ya está en uso."
+            return render_template("dept_form.html", action="Crear", dept=data, error=error, readonly=False)
+    return render_template("dept_form.html", action="Crear", dept=None, readonly=False)
 
 
 @bp.route("/edit/<int:deptno>", methods=["GET", "POST"])
@@ -49,7 +54,7 @@ def edit(deptno):
         "RETURN d.deptno AS deptno, d.dname AS dname, d.loc AS loc",
         {"deptno": deptno}
     )
-    return render_template("dept_form.html", action="Editar", dept=dept[0] if dept else None)
+    return render_template("dept_form.html", action="Editar", dept=dept[0] if dept else None, readonly=True)
 
 
 @bp.route("/delete/<int:deptno>", methods=["POST"])

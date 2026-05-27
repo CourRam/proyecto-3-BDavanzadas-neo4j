@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from neo4j.exceptions import ConstraintError
 from db import run_query, run_write
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
@@ -59,38 +60,42 @@ def create():
         empno  = int(request.form["empno"])
         deptno = int(request.form["deptno"])
         mgr    = int(request.form["mgr"]) if request.form.get("mgr") else None
+        data = {
+            "empno":    empno,
+            "ename":    request.form["ename"].upper(),
+            "job":      request.form["job"].upper(),
+            "mgr":      mgr,
+            "hiredate": request.form["hiredate"],
+            "sal":      float(request.form["sal"]),
+            "comm":     float(request.form["comm"]) if request.form.get("comm") else None,
+            "deptno":   deptno,
+        }
+        try:
+            run_write(
+                """
+                CREATE (e:Employee {
+                    empno:    $empno,
+                    ename:    $ename,
+                    job:      $job,
+                    mgr:      $mgr,
+                    hiredate: $hiredate,
+                    sal:      $sal,
+                    comm:     $comm,
+                    deptno:   $deptno
+                })
+                WITH e
+                MATCH (d:Department {deptno: $deptno})
+                MERGE (e)-[:WORKS_IN]->(d)
+                """,
+                data
+            )
+            _create_reports_to(empno, mgr)
+            return redirect(url_for("employees.index"))
+        except ConstraintError:
+            error = f"El número de empleado {empno} ya está en uso."
+            return render_template("emp_form.html", action="Crear", emp=data, depts=depts, error=error, readonly=False)
 
-        run_write(
-            """
-            CREATE (e:Employee {
-                empno:    $empno,
-                ename:    $ename,
-                job:      $job,
-                mgr:      $mgr,
-                hiredate: $hiredate,
-                sal:      $sal,
-                comm:     $comm,
-                deptno:   $deptno
-            })
-            WITH e
-            MATCH (d:Department {deptno: $deptno})
-            MERGE (e)-[:WORKS_IN]->(d)
-            """,
-            {
-                "empno":    empno,
-                "ename":    request.form["ename"].upper(),
-                "job":      request.form["job"].upper(),
-                "mgr":      mgr,
-                "hiredate": request.form["hiredate"],
-                "sal":      float(request.form["sal"]),
-                "comm":     float(request.form["comm"]) if request.form.get("comm") else None,
-                "deptno":   deptno,
-            }
-        )
-        _create_reports_to(empno, mgr)
-        return redirect(url_for("employees.index"))
-
-    return render_template("emp_form.html", action="Crear", emp=None, depts=depts)
+    return render_template("emp_form.html", action="Crear", emp=None, depts=depts, readonly=False)
 
 
 @bp.route("/edit/<int:empno>", methods=["GET", "POST"])
@@ -132,7 +137,7 @@ def edit(empno):
         "e.hiredate AS hiredate, e.sal AS sal, e.comm AS comm, e.deptno AS deptno",
         {"empno": empno}
     )
-    return render_template("emp_form.html", action="Editar", emp=emp[0] if emp else None, depts=depts)
+    return render_template("emp_form.html", action="Editar", emp=emp[0] if emp else None, depts=depts, readonly=True)
 
 
 @bp.route("/delete/<int:empno>", methods=["POST"])
